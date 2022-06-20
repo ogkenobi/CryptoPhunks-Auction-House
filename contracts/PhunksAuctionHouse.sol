@@ -9,11 +9,8 @@
 
 pragma solidity ^0.8.15;
 
-// import { PausableUpgradeable } from '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import { Pausable } from '@openzeppelin/contracts/security/Pausable.sol';
-// import { ReentrancyGuardUpgradeable } from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import { ReentrancyGuard } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-// import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { IPhunksAuctionHouse } from './interfaces/IPhunksAuctionHouse.sol';
@@ -21,7 +18,7 @@ import { IPhunksToken } from './interfaces/IPhunksToken.sol';
 import { IWETH } from './interfaces/IWETH.sol';
 
 contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, Ownable {
-    // The Phunks ERC721 token contract -- CryptoPhunks V2 contract address
+    // The Phunks ERC721 token contract
     IPhunksToken public phunks;
 
     // The address of the WETH contract
@@ -44,6 +41,10 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
 
     // Treasury wallet
     address public treasuryWallet;
+
+    //Reserved for special auction
+    // uint256[] reservedPhunks = [2711, 1478, 5066, 5312, 5742, 8348];
+    uint256[] reservedPhunks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
 
     /**
      * @notice Initialize the auction house and base contracts,
@@ -183,7 +184,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         emit AuctionMinBidIncrementPercentageUpdated(_minBidIncrementPercentage);
     }
 
-    function _getRand() public view returns(uint256) {
+    function _getRand() internal view returns(uint256) {
         uint256 randNum = uint256(keccak256(abi.encodePacked(block.timestamp + block.difficulty + 
         ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (block.timestamp)) + block.gaslimit + 
         ((uint256(keccak256(abi.encodePacked(msg.sender)))) / (block.timestamp)) + block.number)));
@@ -198,10 +199,20 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * catch the revert and pause this contract.
      */
     function _createAuction() internal {
-        //mainnet
+        //mainnet CHANGE walletOfOwner to below!!
         //try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
         try phunks.walletOfOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
             uint256 phunkId = phunkArray[(_getRand() % phunkArray.length)];
+            for (uint i = 0; i < reservedPhunks.length;)
+            {
+                if (phunkId == reservedPhunks[i])
+                {
+                    phunkId = phunkArray[(_getRand() % phunkArray.length)];
+                    i = 0;
+                } else {
+                    ++i;
+                }
+            }
             uint256 startTime = block.timestamp;
             uint256 endTime = startTime + duration;
 
@@ -220,6 +231,28 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         }
     }
 
+    function createSpecialAuction(uint256 _phunkId, uint256 _endTime) public onlyOwner {
+        //mainnet
+        //try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
+        
+        uint256 phunkId = _phunkId;
+        uint256 startTime = block.timestamp;
+        uint256 endTime = _endTime;
+
+        auction = Auction({
+            phunkId: phunkId,
+            amount: 0,
+            startTime: startTime,
+            endTime: endTime,
+            bidder: payable(0),
+            settled: false
+        });
+
+        emit AuctionCreated(phunkId, startTime, endTime);
+    
+        _pause();
+    }
+
     /**
      * @notice Settle an auction, finalizing the bid and paying out to the owner.
      * @dev If there are no bids, the Phunk is burned.
@@ -234,11 +267,11 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         auction.settled = true;
 
         if (_auction.bidder != address(0)) {
-            phunks.transferFrom(address(this), _auction.bidder, _auction.phunkId);
+            phunks.transferFrom(address(treasuryWallet), _auction.bidder, _auction.phunkId);
         }
 
         if (_auction.amount > 0) {
-            _safeTransferETHWithFallback(owner(), _auction.amount);
+            _safeTransferETHWithFallback(treasuryWallet, _auction.amount);
         }
 
         emit AuctionSettled(_auction.phunkId, _auction.bidder, _auction.amount);
