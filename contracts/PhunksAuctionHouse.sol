@@ -9,15 +9,18 @@
 
 pragma solidity ^0.8.15;
 
-import { PausableUpgradeable } from '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
-import { ReentrancyGuardUpgradeable } from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+// import { PausableUpgradeable } from '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+import { Pausable } from '@openzeppelin/contracts/security/Pausable.sol';
+// import { ReentrancyGuardUpgradeable } from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import { ReentrancyGuard } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+// import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { IPhunksAuctionHouse } from './interfaces/IPhunksAuctionHouse.sol';
 import { IPhunksToken } from './interfaces/IPhunksToken.sol';
 import { IWETH } from './interfaces/IWETH.sol';
 
-contract PhunksAuctionHouse is IPhunksAuctionHouse, PausableUpgradeable, ReentrancyGuardUpgradeable, OwnableUpgradeable {
+contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, Ownable {
     // The Phunks ERC721 token contract -- CryptoPhunks V2 contract address
     IPhunksToken public phunks;
 
@@ -47,6 +50,8 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, PausableUpgradeable, Reentra
      * populate configuration values, and pause the contract.
      * @dev This function can only be called once.
      */
+    
+    
     function initialize(
         IPhunksToken _phunks,
         address _weth,
@@ -56,9 +61,9 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, PausableUpgradeable, Reentra
         uint256 _duration,
         address _treasuryWallet
     ) public onlyOwner {
-        __Pausable_init();
-        __ReentrancyGuard_init();
-        __Ownable_init();
+        // __Pausable_init();
+        // __ReentrancyGuard_init();
+        // __Ownable_init();
 
         _pause();
 
