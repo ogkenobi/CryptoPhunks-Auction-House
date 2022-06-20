@@ -44,7 +44,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
 
     //Reserved for special auction
     // uint256[] reservedPhunks = [2711, 1478, 5066, 5312, 5742, 8348];
-    uint256[] reservedPhunks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
 
     /**
      * @notice Initialize the auction house and base contracts,
@@ -203,15 +202,9 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         //try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
         try phunks.walletOfOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
             uint256 phunkId = phunkArray[(_getRand() % phunkArray.length)];
-            for (uint i = 0; i < reservedPhunks.length;)
+            while (phunkId == 1 || phunkId == 2 || phunkId ==3 || phunkId == 4 || phunkId == 5 || phunkId == 6)
             {
-                if (phunkId == reservedPhunks[i])
-                {
-                    phunkId = phunkArray[(_getRand() % phunkArray.length)];
-                    i = 0;
-                } else {
-                    ++i;
-                }
+                phunkId = phunkArray[(_getRand() % phunkArray.length)];
             }
             uint256 startTime = block.timestamp;
             uint256 endTime = startTime + duration;
