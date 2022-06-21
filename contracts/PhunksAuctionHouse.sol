@@ -192,6 +192,10 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         emit AuctionMinBidIncrementPercentageUpdated(_minBidIncrementPercentage);
     }
 
+    /**
+     * @notice Generates a big random number on the cheap.
+     * 
+     */
     function _getRand() internal view returns(uint256) {
         uint256 randNum = uint256(keccak256(abi.encodePacked(block.timestamp + block.difficulty + 
         ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (block.timestamp)) + block.gaslimit + 
