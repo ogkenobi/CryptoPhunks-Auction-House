@@ -15,10 +15,10 @@ module.exports = {
       },
     },
    },
-   defaultNetwork: "rinkeby",
+   defaultNetwork: "mainnet",
    networks: {
       hardhat: {},
-      rinkeby: {
+      mainnet: {
          url: API_URL,
          accounts: [`0x${PRIVATE_KEY}`]
       }

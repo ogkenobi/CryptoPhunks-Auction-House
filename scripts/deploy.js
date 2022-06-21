@@ -3,8 +3,7 @@ async function main() {
     const auctionContract = await ethers.getContractFactory("PhunksAuctionHouse");
  
     // Start deployment, returning a promise that resolves to a contract object
-    const auctionHouse = await auctionContract.deploy(); // mainnet
-    // const beanoNFT = await beePhunks.deploy("0xe1d8e86d222b8c0e479eb9ee3d89415123ac6387","0x6f415afdce0d9774241e33128db54956edce8b61"); // rinkeby 
+    const auctionHouse = await auctionContract.deploy();
     console.log("Contract deployed to address:", auctionHouse.address);
  }
  

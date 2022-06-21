@@ -1,11 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0
+// ████████████████████████████████████████████████
+// ████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████
+// ████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████
+// ████░░░░▓▓▓▓▓▓▓▓▓▓▓▓░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░████
+// ████░░░░▓▓▓▓▓▓▓▓▓▓▓▓░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░████████
+// ████░░░░▓▓▓▓▓▓▓▓▓▓▓▓░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░████████
+// ████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████████
+// ████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████████
+// ████████████████████████████████████████████████
 // LICENSE
-// PhunksAuctionHouse.sol is a modified version of Nouns and Zora AuctionHouse.sol:
+// PhunksAuctionHouse.sol is a modified version of Zora's AuctionHouse.sol:
 // https://github.com/ourzora/auction-house/blob/54a12ec1a6cf562e49f0a4917990474b11350a2d/contracts/AuctionHouse.sol
-// https://etherscan.io/address/0xF15a943787014461d94da08aD4040f79Cd7c124e
 //
 // AuctionHouse.sol source code Copyright Zora licensed under the GPL-3.0 license.
-// With modifications by Phunkders DAO.
+// With modifications by Nounders DAO and ogkenobi.eth
+// Not affiliated with Not Larva Labs
 
 pragma solidity ^0.8.15;
 
@@ -39,7 +48,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     // The active auction
     IPhunksAuctionHouse.Auction public auction;
 
-    // Treasury wallet
+    // The Treasury wallet
     address public treasuryWallet;
 
     /**
@@ -47,8 +56,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * populate configuration values, and pause the contract.
      * @dev This function can only be called once.
      */
-    
-    
     function initialize(
         IPhunksToken _phunks,
         address _weth,
@@ -200,14 +207,14 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * catch the revert and pause this contract.
      */
     function _createAuction() internal {
-            try phunks.walletOfOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
-        // try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
+            try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
             uint256 phunkId = phunkArray[(_getRand() % phunkArray.length)];
+            uint i = 0;
             //reserves 6 phunk IDs: 1 ape, 4 zombies, and 7-trait
-            // while (phunkId == 2711 || phunkId == 1478 || phunkId == 5066 || phunkId == 5312 || phunkId == 5742 || phunkId == 8348)
-            while (phunkId == 1 || phunkId == 2 || phunkId ==3 || phunkId == 4 || phunkId == 5 || phunkId == 6)
+            while (phunkId == 2711 || phunkId == 1478 || phunkId == 5066 || phunkId == 5312 || phunkId == 5742 || phunkId == 8348)
             {
-                phunkId = phunkArray[(_getRand() % phunkArray.length)];
+                phunkId = phunkArray[i];
+                ++i;
             }
             uint256 startTime = block.timestamp;
             uint256 endTime = startTime + duration;
@@ -222,13 +229,18 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             });
 
             emit AuctionCreated(phunkId, startTime, endTime);
+
         } catch Error(string memory) {
             _pause();
         }
     }
-
+    /**
+     * @notice Create an speacial auction for specific phunkID
+     * @dev Store the auction details in the `auction` state variable and emit an AuctionCreated event.
+     * If the mint reverts, the minter was updated without pausing this contract first. To remedy this,
+     * catch the revert and pause this contract.
+     */
     function createSpecialAuction(uint256 _phunkId, uint256 _endTime) public onlyOwner {
-        
         uint256 phunkId = _phunkId;
         uint256 startTime = block.timestamp;
         uint256 endTime = _endTime;

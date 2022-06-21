@@ -53,15 +53,19 @@ treasuryWallet
 
 
 Open Issues:
-1. Reserve price? (easy to set this)
-2. Ability to cancel an auction? 
-3. SettleAndCreateAuction costs gas. Anyone can call it, assets sent trustlessly
+1. SettleAndCreateAuction costs gas. Anyone can call it, assets sent trustlessly
 4. Current phunks are reserved for special auction: 7-trait, Ape, 4 zombies
 
 
 Notes: 
 1. Treasury must setApprovalForAll to Auction contract?? (check this)
 2. If you are outbid, funds automatically returned
+3. Ability to cancel an auction -->> Pause contract before current auction ends.
+4. Current phunks are reserved for special auction: 7-trait, Ape, 4 zombies (2711, 1478, 5066, 5312, 5742, 8348)
+
+Todo:
+Community Members can Auction their shit
+Raffle a phunk, each ticket costs 0.01 etc
 
 
 
