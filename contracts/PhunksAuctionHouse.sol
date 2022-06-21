@@ -243,7 +243,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
 
         emit AuctionCreated(phunkId, startTime, endTime);
     
-        _pause();
     }
 
     /**
