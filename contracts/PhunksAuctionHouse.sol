@@ -148,6 +148,14 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     }
 
     /**
+     * @notice Set the treausury wallet address.
+     * @dev Only callable by the owner.
+     */
+     function setTreasuryAddress(address _treasuryWallet) public onlyOwner {
+        treasuryWallet = _treasuryWallet;
+    }
+
+    /**
      * @notice Set the auction time buffer.
      * @dev Only callable by the owner.
      */

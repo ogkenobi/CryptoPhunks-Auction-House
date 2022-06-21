@@ -8,6 +8,23 @@
         uint256 _duration,
         address _treasuryWallet
 
+mainnetPhunks contract
+
+weth contract
+
+timeBuffer
+
+reserve price
+
+minBidIncrement
+10
+
+duration
+259200 3 day
+
+treasuryWallet
+
+
 rinkeby smolPhunks contract
 0x815cbCD43F214C06e1827893d8Adaa9C8b209259
 
