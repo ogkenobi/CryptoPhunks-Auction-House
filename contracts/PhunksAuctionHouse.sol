@@ -151,7 +151,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * @notice Set the treausury wallet address.
      * @dev Only callable by the owner.
      */
-     function setTreasuryAddress(address _treasuryWallet) public onlyOwner {
+     function setTreasuryWallet(address _treasuryWallet) public onlyOwner {
         treasuryWallet = _treasuryWallet;
     }
 
@@ -200,11 +200,12 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * catch the revert and pause this contract.
      */
     function _createAuction() internal {
-        
-        try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
+            try phunks.walletOfOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
+        // try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
             uint256 phunkId = phunkArray[(_getRand() % phunkArray.length)];
             //reserves 6 phunk IDs: 1 ape, 4 zombies, and 7-trait
-            while (phunkId == 2711 || phunkId == 1478 || phunkId == 5066 || phunkId == 5312 || phunkId == 5742 || phunkId == 8348)
+            // while (phunkId == 2711 || phunkId == 1478 || phunkId == 5066 || phunkId == 5312 || phunkId == 5742 || phunkId == 8348)
+            while (phunkId == 1 || phunkId == 2 || phunkId ==3 || phunkId == 4 || phunkId == 5 || phunkId == 6)
             {
                 phunkId = phunkArray[(_getRand() % phunkArray.length)];
             }

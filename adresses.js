@@ -9,20 +9,25 @@
         address _treasuryWallet
 
 mainnetPhunks contract
+0xf07468eAd8cf26c752C676E43C814FEe9c8CF402
 
 weth contract
+0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
 
 timeBuffer
+1800
 
 reserve price
+0
 
 minBidIncrement
 10
 
 duration
-259200 3 day
+259200 3 days
 
 treasuryWallet
+0x61f874551c69f0e40c9f55219107b408c989adec
 
 
 rinkeby smolPhunks contract
