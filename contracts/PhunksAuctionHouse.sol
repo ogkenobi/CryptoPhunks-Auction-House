@@ -42,9 +42,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     // Treasury wallet
     address public treasuryWallet;
 
-    //Reserved for special auction
-    // uint256[] reservedPhunks = [2711, 1478, 5066, 5312, 5742, 8348];
-
     /**
      * @notice Initialize the auction house and base contracts,
      * populate configuration values, and pause the contract.
@@ -61,9 +58,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         uint256 _duration,
         address _treasuryWallet
     ) public onlyOwner {
-        // __Pausable_init();
-        // __ReentrancyGuard_init();
-        // __Ownable_init();
 
         _pause();
 
@@ -198,11 +192,11 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * catch the revert and pause this contract.
      */
     function _createAuction() internal {
-        //mainnet CHANGE walletOfOwner to below!!
-        //try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
-        try phunks.walletOfOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
+        
+        try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
             uint256 phunkId = phunkArray[(_getRand() % phunkArray.length)];
-            while (phunkId == 1 || phunkId == 2 || phunkId ==3 || phunkId == 4 || phunkId == 5 || phunkId == 6)
+            //reserves 6 phunk IDs: 1 ape, 4 zombies, and 7-trait
+            while (phunkId == 2711 || phunkId == 1478 || phunkId == 5066 || phunkId == 5312 || phunkId == 5742 || phunkId == 8348)
             {
                 phunkId = phunkArray[(_getRand() % phunkArray.length)];
             }
@@ -225,8 +219,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     }
 
     function createSpecialAuction(uint256 _phunkId, uint256 _endTime) public onlyOwner {
-        //mainnet
-        //try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
         
         uint256 phunkId = _phunkId;
         uint256 startTime = block.timestamp;
