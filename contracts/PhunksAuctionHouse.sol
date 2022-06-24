@@ -163,6 +163,16 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     }
 
     /**
+     * @notice Set the duration of an auction
+     * @dev Only callable by the owner.
+     */
+    function setDuration(uint256 _duration) external override onlyOwner {
+        duration = _duration;
+
+        emit AuctionDurationUpdated(_duration);
+    }
+
+    /**
      * @notice Set the auction time buffer.
      * @dev Only callable by the owner.
      */

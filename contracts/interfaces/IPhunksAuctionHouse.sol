@@ -35,6 +35,8 @@ interface IPhunksAuctionHouse {
 
     event AuctionTimeBufferUpdated(uint256 timeBuffer);
 
+    event AuctionDurationUpdated(uint256 duration);
+
     event AuctionReservePriceUpdated(uint256 reservePrice);
 
     event AuctionMinBidIncrementPercentageUpdated(uint256 minBidIncrementPercentage);
@@ -50,6 +52,8 @@ interface IPhunksAuctionHouse {
     function unpause() external;
 
     function setTimeBuffer(uint256 timeBuffer) external;
+
+    function setDuration(uint256 duration) external;
 
     function setReservePrice(uint256 reservePrice) external;
 
