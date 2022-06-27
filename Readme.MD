@@ -7,10 +7,12 @@ Release Notes:
 
 4. When 'paused' is true, only settleAuction() can be called.
 
-5. To auction specific tokenID: first call pause(), then settleAuction(), then call createSpecialAuction() and specificy tokenID and endTime.
+5. createSpecialAuction() can only be called by PhunksAuctionHouse contract owner.
 
-6. Current phunks are reserved for special auction: 7-trait, Ape, 4 zombies (2711, 1478, 5066, 5312, 5742, 8348)
+6. To auction specific tokenID: first call pause(), then settleAuction(), then call createSpecialAuction() and specificy tokenID and endTime.
 
-7. You can remove these reserved tokens by removing lines 218-222 in PhunksAuctionHouse.sol
+7. Current phunks are reserved for special auction: 7-trait, Ape, 4 zombies (2711, 1478, 5066, 5312, 5742, 8348)
+
+8. You can remove these reserved tokens by removing lines 218-222 in PhunksAuctionHouse.sol
 
 
