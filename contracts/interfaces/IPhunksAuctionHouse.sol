@@ -25,7 +25,7 @@ interface IPhunksAuctionHouse {
         bool settled;
     }
 
-    event AuctionCreated(uint256 indexed phunkId, uint256 startTime, uint256 endTime);
+    event AuctionCreated(uint256 indexed phunkId, uint256 startTime, uint256 endTime, string attributes, bytes image);
 
     event AuctionBid(uint256 indexed phunkId, address sender, uint256 value, bool extended);
 

@@ -24,6 +24,7 @@ import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { IPhunksAuctionHouse } from './interfaces/IPhunksAuctionHouse.sol';
 import { IPhunksToken } from './interfaces/IPhunksToken.sol';
+import { PunkDataInterface } from './interfaces/IPhunksToken.sol';
 import { IWETH } from './interfaces/IWETH.sol';
 
 contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, Ownable {
@@ -51,6 +52,9 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     // The Treasury wallet
     address public treasuryWallet;
 
+    //CryptoPunks On-Chain Data contract address
+    PunkDataInterface private punkDataContract;
+
     /**
      * @notice Initialize the auction house and base contracts,
      * populate configuration values, and pause the contract.
@@ -63,7 +67,8 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         uint256 _reservePrice,
         uint8 _minBidIncrementPercentage,
         uint256 _duration,
-        address _treasuryWallet
+        address _treasuryWallet,
+        address _punksDataContractAddress
     ) public onlyOwner {
 
         _pause();
@@ -75,6 +80,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         minBidIncrementPercentage = _minBidIncrementPercentage;
         duration = _duration;
         treasuryWallet = _treasuryWallet;
+        punkDataContract = PunkDataInterface(_punksDataContractAddress);
     }
 
     /**
@@ -229,6 +235,8 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
                 phunkId = phunkArray[i];
                 ++i;
             }
+            bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
+            string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
             uint256 startTime = block.timestamp;
             uint256 endTime = startTime + duration;
 
@@ -241,7 +249,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
                 settled: false
             });
 
-            emit AuctionCreated(phunkId, startTime, endTime);
+            emit AuctionCreated(phunkId, startTime, endTime, attributes, phunkImage);
 
         } catch Error(string memory) {
             _pause();
@@ -257,6 +265,8 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         uint256 phunkId = _phunkId;
         uint256 startTime = block.timestamp;
         uint256 endTime = _endTime;
+        bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
+        string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
 
         auction = Auction({
             phunkId: phunkId,
@@ -267,7 +277,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             settled: false
         });
 
-        emit AuctionCreated(phunkId, startTime, endTime);
+        emit AuctionCreated(phunkId, startTime, endTime, attributes, phunkImage);
     
     }
 
