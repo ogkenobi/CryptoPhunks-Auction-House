@@ -23,15 +23,17 @@ interface IPhunksAuctionHouse {
         address payable bidder;
         // Whether or not the auction has been settled
         bool settled;
+        // Auction ID number
+        uint256 auctionId;
     }
 
-    event AuctionCreated(uint256 indexed phunkId, uint256 startTime, uint256 endTime, string attributes, bytes image);
+    event AuctionCreated(uint256 indexed phunkId, uint256 auctionId, uint256 startTime, uint256 endTime, string attributes, bytes image);
 
-    event AuctionBid(uint256 indexed phunkId, address sender, uint256 value, bool extended);
+    event AuctionBid(uint256 indexed phunkId, uint256 auctionId, address sender, uint256 value, bool extended);
 
-    event AuctionExtended(uint256 indexed phunkId, uint256 endTime);
+    event AuctionExtended(uint256 indexed phunkId, uint256 auctionId, uint256 endTime);
 
-    event AuctionSettled(uint256 indexed phunkId, address winner, uint256 amount);
+    event AuctionSettled(uint256 indexed phunkId, uint256 auctionId, address winner, uint256 amount);
 
     event AuctionTimeBufferUpdated(uint256 timeBuffer);
 

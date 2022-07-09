@@ -46,6 +46,9 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     // The duration of a single auction
     uint256 public duration;
 
+    // The curren auction ID number
+    uint256 public auctionId = 0;
+
     // The active auction
     IPhunksAuctionHouse.Auction public auction;
 
@@ -130,10 +133,10 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             auction.endTime = _auction.endTime = block.timestamp + timeBuffer;
         }
 
-        emit AuctionBid(_auction.phunkId, msg.sender, msg.value, extended);
+        emit AuctionBid(_auction.phunkId, auctionId, msg.sender, msg.value, extended);
 
         if (extended) {
-            emit AuctionExtended(_auction.phunkId, _auction.endTime);
+            emit AuctionExtended(_auction.phunkId, auctionId, _auction.endTime);
         }
     }
 
@@ -239,6 +242,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
             uint256 startTime = block.timestamp;
             uint256 endTime = startTime + duration;
+            auctionId++;
 
             auction = Auction({
                 phunkId: phunkId,
@@ -246,10 +250,11 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
                 startTime: startTime,
                 endTime: endTime,
                 bidder: payable(0),
-                settled: false
+                settled: false,
+                auctionId: auctionId
             });
 
-            emit AuctionCreated(phunkId, startTime, endTime, attributes, phunkImage);
+            emit AuctionCreated(phunkId, auctionId, startTime, endTime, attributes, phunkImage);
 
         } catch Error(string memory) {
             _pause();
@@ -267,6 +272,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         uint256 endTime = _endTime;
         bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
         string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
+        auctionId++;
 
         auction = Auction({
             phunkId: phunkId,
@@ -274,10 +280,11 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             startTime: startTime,
             endTime: endTime,
             bidder: payable(0),
-            settled: false
+            settled: false,
+            auctionId: auctionId
         });
 
-        emit AuctionCreated(phunkId, startTime, endTime, attributes, phunkImage);
+        emit AuctionCreated(phunkId, auctionId, startTime, endTime, attributes, phunkImage);
     
     }
 
@@ -302,7 +309,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             _safeTransferETHWithFallback(treasuryWallet, _auction.amount);
         }
 
-        emit AuctionSettled(_auction.phunkId, _auction.bidder, _auction.amount);
+        emit AuctionSettled(_auction.phunkId, auctionId, _auction.bidder, _auction.amount);
     }
 
     /**
