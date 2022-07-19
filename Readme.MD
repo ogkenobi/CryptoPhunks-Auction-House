@@ -11,8 +11,10 @@ Release Notes:
 
 6. To auction specific tokenID: first call pause(), then settleAuction(), then call createSpecialAuction() and specificy tokenID and endTime.
 
-7. Current phunks are reserved for special auction: 7-trait, Ape, 4 zombies (2711, 1478, 5066, 5312, 5742, 8348)
+7. Current phunks are reserved for special auction: 7-trait (8348)
 
-8. You can remove these reserved tokens by removing lines 218-222 in PhunksAuctionHouse.sol
+8. When you get to the last phunk, it will auction that last phunk, and if people try to settleCurrentAndCreateNew() they will get hit with a gas error.
+
+However, the treasury can then pause() the contract and call settleAuction() to send ETH to treasury and the last Phunk to auction winner.
 
 

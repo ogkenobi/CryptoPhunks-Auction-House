@@ -58,6 +58,8 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     //CryptoPunks On-Chain Data contract address
     PunkDataInterface private punkDataContract;
 
+    //
+
     /**
      * @notice Initialize the auction house and base contracts,
      * populate configuration values, and pause the contract.
@@ -232,12 +234,15 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
             uint256 phunkId = phunkArray[(_getRand() % phunkArray.length)];
             uint i = 0;
-            //reserves 6 phunk IDs: 1 ape, 4 zombies, and 7-trait
-            while (phunkId == 2711 || phunkId == 1478 || phunkId == 5066 || phunkId == 5312 || phunkId == 5742 || phunkId == 8348)
+            //removes 7-trait phunk from random selection
+            while (phunkId == 8348)
             {
                 phunkId = phunkArray[i];
                 ++i;
             }
+
+            phunks.transferFrom(address(treasuryWallet), address(this), phunkId);
+
             bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
             string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
             uint256 startTime = block.timestamp;
@@ -268,10 +273,13 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      */
     function createSpecialAuction(uint256 _phunkId, uint256 _endTime) public onlyOwner {
         uint256 phunkId = _phunkId;
-        uint256 startTime = block.timestamp;
-        uint256 endTime = _endTime;
+
+        phunks.transferFrom(address(treasuryWallet), address(this), phunkId);
+
         bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
         string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
+        uint256 startTime = block.timestamp;
+        uint256 endTime = _endTime;
         auctionId++;
 
         auction = Auction({
@@ -302,7 +310,9 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         auction.settled = true;
 
         if (_auction.bidder != address(0)) {
-            phunks.transferFrom(address(treasuryWallet), _auction.bidder, _auction.phunkId);
+            phunks.transferFrom(address(this), _auction.bidder, _auction.phunkId);
+        } else {
+            phunks.transferFrom(address(this), treasuryWallet, _auction.phunkId);
         }
 
         if (_auction.amount > 0) {
@@ -330,4 +340,10 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         (bool success, ) = to.call{ value: value, gas: 30_000 }(new bytes(0));
         return success;
     }
+
+    // function transferPhunk(address to, uint256 phunkId) public onlyOwner {
+
+    //     phunks.transferFrom(address(this), to, phunkId);
+
+    // }
 }
