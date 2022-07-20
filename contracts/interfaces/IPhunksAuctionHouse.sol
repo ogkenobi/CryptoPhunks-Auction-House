@@ -12,7 +12,7 @@ pragma solidity ^0.8.15;
 interface IPhunksAuctionHouse {
     struct Auction {
         // ID for the Phunk (ERC721 token ID)
-        uint256 phunkId;
+        uint phunkId;
         // The current highest bid amount
         uint256 amount;
         // The time that the auction started
@@ -27,13 +27,13 @@ interface IPhunksAuctionHouse {
         uint256 auctionId;
     }
 
-    event AuctionCreated(uint256 indexed phunkId, uint256 auctionId, uint256 startTime, uint256 endTime, string attributes, bytes image);
+    event AuctionCreated(uint indexed phunkId, uint256 auctionId, uint256 startTime, uint256 endTime);
 
-    event AuctionBid(uint256 indexed phunkId, uint256 auctionId, address sender, uint256 value, bool extended);
+    event AuctionBid(uint indexed phunkId, uint256 auctionId, address sender, uint256 value, bool extended);
 
-    event AuctionExtended(uint256 indexed phunkId, uint256 auctionId, uint256 endTime);
+    event AuctionExtended(uint indexed phunkId, uint256 auctionId, uint256 endTime);
 
-    event AuctionSettled(uint256 indexed phunkId, uint256 auctionId, address winner, uint256 amount);
+    event AuctionSettled(uint indexed phunkId, uint256 auctionId, address winner, uint256 amount);
 
     event AuctionTimeBufferUpdated(uint256 timeBuffer);
 
@@ -47,7 +47,7 @@ interface IPhunksAuctionHouse {
 
     function settleCurrentAndCreateNewAuction() external;
 
-    function createBid(uint256 phunkId) external payable;
+    function createBid(uint phunkId) external payable;
 
     function pause() external;
 

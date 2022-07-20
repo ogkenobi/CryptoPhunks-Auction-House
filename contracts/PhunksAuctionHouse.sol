@@ -24,7 +24,6 @@ import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { IPhunksAuctionHouse } from './interfaces/IPhunksAuctionHouse.sol';
 import { IPhunksToken } from './interfaces/IPhunksToken.sol';
-import { PunkDataInterface } from './interfaces/IPhunksToken.sol';
 import { IWETH } from './interfaces/IWETH.sol';
 
 contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, Ownable {
@@ -55,11 +54,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
     // The Treasury wallet
     address public treasuryWallet;
 
-    //CryptoPunks On-Chain Data contract address
-    PunkDataInterface private punkDataContract;
-
-    //
-
     /**
      * @notice Initialize the auction house and base contracts,
      * populate configuration values, and pause the contract.
@@ -72,8 +66,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         uint256 _reservePrice,
         uint8 _minBidIncrementPercentage,
         uint256 _duration,
-        address _treasuryWallet,
-        address _punksDataContractAddress
+        address _treasuryWallet
     ) public onlyOwner {
 
         _pause();
@@ -85,7 +78,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         minBidIncrementPercentage = _minBidIncrementPercentage;
         duration = _duration;
         treasuryWallet = _treasuryWallet;
-        punkDataContract = PunkDataInterface(_punksDataContractAddress);
     }
 
     /**
@@ -108,7 +100,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * @notice Create a bid for a Phunk, with a given amount.
      * @dev This contract only accepts payment in ETH.
      */
-    function createBid(uint256 phunkId) external payable override nonReentrant {
+    function createBid(uint phunkId) external payable override nonReentrant {
         IPhunksAuctionHouse.Auction memory _auction = auction;
 
         require(_auction.phunkId == phunkId, 'Phunk not up for auction');
@@ -232,7 +224,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      */
     function _createAuction() internal {
             try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
-            uint256 phunkId = phunkArray[(_getRand() % phunkArray.length)];
+            uint phunkId = phunkArray[(_getRand() % phunkArray.length)];
             uint i = 0;
             //removes 7-trait phunk from random selection
             while (phunkId == 8348)
@@ -240,8 +232,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
                 phunkId = phunkArray[i];
                 ++i;
             }
-            bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
-            string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
+
             uint256 startTime = block.timestamp;
             uint256 endTime = startTime + duration;
             auctionId++;
@@ -256,7 +247,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
                 auctionId: auctionId
             });
 
-            emit AuctionCreated(phunkId, auctionId, startTime, endTime, attributes, phunkImage);
+            emit AuctionCreated(phunkId, auctionId, startTime, endTime);
 
         } catch Error(string memory) {
             _pause();
@@ -268,10 +259,8 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * If the mint reverts, the minter was updated without pausing this contract first. To remedy this,
      * catch the revert and pause this contract.
      */
-    function createSpecialAuction(uint256 _phunkId, uint256 _endTime) public onlyOwner {
-        uint256 phunkId = _phunkId;
-        bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
-        string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
+    function createSpecialAuction(uint _phunkId, uint256 _endTime) public onlyOwner {
+        uint phunkId = _phunkId;
         uint256 startTime = block.timestamp;
         uint256 endTime = _endTime;
         auctionId++;
@@ -286,7 +275,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             auctionId: auctionId
         });
 
-        emit AuctionCreated(phunkId, auctionId, startTime, endTime, attributes, phunkImage);
+        emit AuctionCreated(phunkId, auctionId, startTime, endTime);
     
     }
 

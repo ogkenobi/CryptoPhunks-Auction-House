@@ -10,9 +10,8 @@ _reservePrice => the minimum price an NFT will sell for.
 _minBidIncrementPercentage => the percentage above the current bid. New bid must be greater or equal to current bid + (current bid * minBidIncrementPercentage).
 _duration => the amount of time, in seconds, an auction will last
 _treasuryWallet => wallet address holding NFTs to be auctioned and ETH collected from auctions.
-_punksDataContractAddress => contract address of On-Chain CryptoPunks Data (images/traits).
 
-3. Once steps 1 and 2 are complete, call unpause() to CreateAuction() and begin perpetual auctions.
+3. Once steps 1 and 2 are complete, call unpause() to begin perpetual auctions.
 
 4. CreateAuction() generates a random number to select an NFT to be auctioned from the Treasury Wallet.
 
@@ -30,10 +29,12 @@ _punksDataContractAddress => contract address of On-Chain CryptoPunks Data (imag
 
 11. To auction specific tokenID: first call pause(), then settleAuction(), then call createSpecialAuction() and specify tokenID and endTime (in seconds).
 
-12. Line 238 in PhunksAuctionHouse.sol excludes the 7-trait Phunk (#8348) from random selection.
+12. Once special auction has started, call unpause() to resume perpetual auctions at the conclusion of the Special Auction.
 
-13. When only one NFT remains in the treasury, it will auction that last NFT, and if settleCurrentAndCreateNew() is called you will get hit with a gas error bc there are no NFTs remaining to create a new auction.
+13. Line 238 in PhunksAuctionHouse.sol excludes the 7-trait Phunk (#8348) from random selection.
 
-14. When zero NFTs remain in the treasury: call pause() to pause the contract and then call settleAuction() to trustlessly send ETH to treasury and the last Phunk to auction winner.
+14. When only one NFT remains in the treasury, it will auction that last NFT, and if settleCurrentAndCreateNew() is called you will get hit with a gas error bc there are no NFTs remaining to create a new auction.
+
+15. When zero NFTs remain in the treasury: call pause() to pause the contract and then call settleAuction() to trustlessly send ETH to treasury and the last Phunk to auction winner.
 
 
