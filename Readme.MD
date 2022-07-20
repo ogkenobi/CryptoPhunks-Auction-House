@@ -14,13 +14,13 @@ _punksDataContractAddress => contract address of On-Chain CryptoPunks Data (imag
 
 3. Once steps 1 and 2 are complete, call unpause() to CreateAuction() and begin perpetual auctions.
 
-4. CreateAuction() generates a random number to select an NFT from the Treasury Wallet and transfers the NFT to be held in escrow on the Auction House smart contract.
+4. CreateAuction() generates a random number to select an NFT to be auctioned from the Treasury Wallet.
 
 5. For the duration of the auction, anyone can place bids on the NFT in ETH. The ETH is held in escrow on the Auction House smart contract.
 
 6. If someone outbid, funds automatically returned. Only the highest bid is held in escrow on the Auction House smart contract.
 
-7. At the conclusion of an auction, the ETH and NFT will remain in escrow until settleCurrentAndCreateNewAuction() or settleAuction() are called.
+7. At the conclusion of an auction, the ETH will remain in escrow until settleCurrentAndCreateNewAuction() or settleAuction() are called which will also transfer the NFT from the treasury to winning bidder.
 
 8. When 'unpaused' is true, only settleCurrentAndCreateNewAuction() can be called. Assets from previous auction are sent trustlessly before creating a new auction.
 

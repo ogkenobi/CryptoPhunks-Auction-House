@@ -240,9 +240,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
                 phunkId = phunkArray[i];
                 ++i;
             }
-
-            phunks.transferFrom(address(treasuryWallet), address(this), phunkId);
-
             bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
             string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
             uint256 startTime = block.timestamp;
@@ -273,9 +270,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      */
     function createSpecialAuction(uint256 _phunkId, uint256 _endTime) public onlyOwner {
         uint256 phunkId = _phunkId;
-
-        phunks.transferFrom(address(treasuryWallet), address(this), phunkId);
-
         bytes memory phunkImage = punkDataContract.punkImage(uint16(phunkId));
         string memory attributes = punkDataContract.punkAttributes(uint16(phunkId));
         uint256 startTime = block.timestamp;
@@ -310,9 +304,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         auction.settled = true;
 
         if (_auction.bidder != address(0)) {
-            phunks.transferFrom(address(this), _auction.bidder, _auction.phunkId);
-        } else {
-            phunks.transferFrom(address(this), treasuryWallet, _auction.phunkId);
+            phunks.transferFrom(address(treasuryWallet), _auction.bidder, _auction.phunkId);
         }
 
         if (_auction.amount > 0) {
