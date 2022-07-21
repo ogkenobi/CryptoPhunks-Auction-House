@@ -222,66 +222,37 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * If the mint reverts, the minter was updated without pausing this contract first. To remedy this,
      * catch the revert and pause this contract.
      */
-    // function _createAuction() internal {
-    //         try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
-    //         uint phunkId = phunkArray[(_getRand() % phunkArray.length)];
-    //         uint i = 0;
-    //         //removes 7-trait phunk from random selection
-    //         while (phunkId == 8348)
-    //         {
-    //             phunkId = phunkArray[i];
-    //             ++i;
-    //         }
-
-    //         uint256 startTime = block.timestamp;
-    //         uint256 endTime = startTime + duration;
-    //         auctionId++;
-
-    //         auction = Auction({
-    //             phunkId: phunkId,
-    //             amount: 0,
-    //             startTime: startTime,
-    //             endTime: endTime,
-    //             bidder: payable(0),
-    //             settled: false,
-    //             auctionId: auctionId
-    //         });
-
-    //         emit AuctionCreated(phunkId, auctionId, startTime, endTime);
-
-    //     } catch Error(string memory) {
-    //         _pause();
-    //     }
-    // }
 
     function _createAuction() internal {
-            uint treasuryBalance = phunks.balanceOf(treasuryWallet);
-            uint randomIndex = _getRand() % treasuryBalance;
-            uint phunkId = phunks.tokenOfOwnerByIndex(treasuryWallet, randomIndex);
-            //removes 7-trait phunk from random selection
-            if (phunkId == 8348) {
-                require(treasuryBalance > 1, "No Phunks available for auction.");
+        uint treasuryBalance = phunks.balanceOf(treasuryWallet);
+        require(treasuryBalance > 0, "No Phunks available for auction.");
 
-                uint nextIndex = (randomIndex + 1) % treasuryBalance;
-                phunkId = phunks.tokenOfOwnerByIndex(treasuryWallet, nextIndex);
-                
-            }
+        uint randomIndex = _getRand() % treasuryBalance;
+        uint phunkId = phunks.tokenOfOwnerByIndex(treasuryWallet, randomIndex);
+        //removes 7-trait phunk from random selection
+        if (phunkId == 8348) {
+            require(treasuryBalance > 1, "No Phunks available for auction.");
 
-            uint256 startTime = block.timestamp;
-            uint256 endTime = startTime + duration;
-            auctionId++;
+            uint nextIndex = (randomIndex + 1) % treasuryBalance;
+            phunkId = phunks.tokenOfOwnerByIndex(treasuryWallet, nextIndex);
+            
+        }
 
-            auction = Auction({
-                phunkId: phunkId,
-                amount: 0,
-                startTime: startTime,
-                endTime: endTime,
-                bidder: payable(0),
-                settled: false,
-                auctionId: auctionId
-            });
+        uint256 startTime = block.timestamp;
+        uint256 endTime = startTime + duration;
+        auctionId++;
 
-            emit AuctionCreated(phunkId, auctionId, startTime, endTime);
+        auction = Auction({
+            phunkId: phunkId,
+            amount: 0,
+            startTime: startTime,
+            endTime: endTime,
+            bidder: payable(0),
+            settled: false,
+            auctionId: auctionId
+        });
+
+        emit AuctionCreated(phunkId, auctionId, startTime, endTime);
     }
     /**
      * @notice Create an speacial auction for specific phunkID
@@ -290,6 +261,7 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * catch the revert and pause this contract.
      */
     function createSpecialAuction(uint _phunkId, uint256 _endTime) public onlyOwner {
+        require(phunks.balanceOf(treasuryWallet) > 0, "No Phunks available for auction.");
         uint phunkId = _phunkId;
         uint256 startTime = block.timestamp;
         uint256 endTime = _endTime;
@@ -352,9 +324,4 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
         return success;
     }
 
-    // function transferPhunk(address to, uint256 phunkId) public onlyOwner {
-
-    //     phunks.transferFrom(address(this), to, phunkId);
-
-    // }
 }
