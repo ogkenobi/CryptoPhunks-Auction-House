@@ -15,4 +15,6 @@ interface IPhunksToken is IERC721 {
 
     function getPhunksBelongingToOwner(address _owner) external view returns (uint256[] memory);
 
+    function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256 tokenId);
+
 }

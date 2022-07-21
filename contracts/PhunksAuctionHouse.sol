@@ -222,14 +222,47 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
      * If the mint reverts, the minter was updated without pausing this contract first. To remedy this,
      * catch the revert and pause this contract.
      */
+    // function _createAuction() internal {
+    //         try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
+    //         uint phunkId = phunkArray[(_getRand() % phunkArray.length)];
+    //         uint i = 0;
+    //         //removes 7-trait phunk from random selection
+    //         while (phunkId == 8348)
+    //         {
+    //             phunkId = phunkArray[i];
+    //             ++i;
+    //         }
+
+    //         uint256 startTime = block.timestamp;
+    //         uint256 endTime = startTime + duration;
+    //         auctionId++;
+
+    //         auction = Auction({
+    //             phunkId: phunkId,
+    //             amount: 0,
+    //             startTime: startTime,
+    //             endTime: endTime,
+    //             bidder: payable(0),
+    //             settled: false,
+    //             auctionId: auctionId
+    //         });
+
+    //         emit AuctionCreated(phunkId, auctionId, startTime, endTime);
+
+    //     } catch Error(string memory) {
+    //         _pause();
+    //     }
+    // }
+
     function _createAuction() internal {
-            try phunks.getPhunksBelongingToOwner(treasuryWallet) returns (uint256[] memory phunkArray) {
-            uint phunkId = phunkArray[(_getRand() % phunkArray.length)];
+            uint treasuryBalance = phunks.balanceOf(treasuryWallet);
+            uint randomIndex = _getRand() % treasuryBalance;
+            uint phunkId = phunks.tokenOfOwnerByIndex(treasuryWallet, randomIndex);
             uint i = 0;
             //removes 7-trait phunk from random selection
             while (phunkId == 8348)
             {
-                phunkId = phunkArray[i];
+                phunkId = phunks.tokenOfOwnerByIndex(treasuryWallet, randomIndex);
                 ++i;
             }
 
@@ -248,10 +281,6 @@ contract PhunksAuctionHouse is IPhunksAuctionHouse, Pausable, ReentrancyGuard, O
             });
 
             emit AuctionCreated(phunkId, auctionId, startTime, endTime);
-
-        } catch Error(string memory) {
-            _pause();
-        }
     }
     /**
      * @notice Create an speacial auction for specific phunkID
