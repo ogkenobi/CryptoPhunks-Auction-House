@@ -4,3 +4,4 @@ artifacts
 cache
 bin
 initializer.txt
+hardhat.config.js
